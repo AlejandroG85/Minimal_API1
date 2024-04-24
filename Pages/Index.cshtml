@@ -1,0 +1,130 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@* <div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div> *@
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+
+    $(function () {
+        $("#listadoTareas").sortable({
+            update: function (event, ui) {
+                var orden = $(this).sortable("toArray").toString();
+                $.post("/Tareas/OrdenarTareas", { orden: orden });
+            }
+        });
+        $("#listadoTareas").disableSelection();
+    });
+
+    $(function () {
+        $(".draggable").draggable();
+        $(".droppable").droppable({
+            drop: function (event, ui) {
+                $(this).append(ui.draggable);
+            }
+        });
+    });
+
+    async function nuevaTarea() {
+        const nombreTarea = document.getElementById('nombreTarea').value;
+        const response = await fetch('/Tareas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Nombre: nombreTarea,
+                //Descripcion: descripcionTarea,
+                Finalizada: false,
+                Orden: 0
+            })
+        });
+
+        if (response.ok) {
+            cargarTareas();
+            document.getElementById('nombreTarea').value = '';
+        }
+    }
+
+    async function cargarTareas() {
+        const response = await fetch('/Tareas');
+        const tareas = await response.json();
+
+        const tareasList = document.getElementById('divListadoTareas');
+        tareasList.innerHTML = '';
+
+        tareas.forEach(tarea => {
+            // const li = document.createElement('li');
+            // li.textContent = `${tarea.nombre} - ${tarea.finalizada ? 'Finalizada' : 'Pendiente'}  `;
+            // var checkBox = document.createElement('input');
+
+            // checkBox.id = tarea.id;
+            // checkBox.type = 'checkbox';
+            // checkBox.onclick = checkBoxesSet;
+            // if (tarea.finalizada) {
+            //     checkBox.checked = true
+            // } else {
+            //     checkBox.checked = false
+            // }
+            // li.appendChild(checkBox);
+            // tareasList.appendChild(li);
+            const div = document.createElement('div');
+            div.className = 'draggable';
+            div.textContent = `${tarea.nombre} - ${tarea.finalizada ? 'Finalizada' : 'Pendiente'}  `;
+            var checkBox = document.createElement('input');
+            checkBox.id = tarea.id;
+            checkBox.type = 'checkbox';
+            checkBox.onclick = checkBoxesSet;
+            if (tarea.finalizada) {
+                checkBox.checked = true
+            } else {
+                checkBox.checked = false
+            }
+            div.appendChild(checkBox);
+            tareasList.appendChild(div);
+        });
+    }
+
+    async function finalizarTareas(id) {
+        const response = await fetch('/Tareas/' + id + '/Hecho', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Nombre: nombreTarea,
+                Finalizada: false,
+                Orden: 0
+            })
+        });
+
+        if (response.ok) {
+            cargarTareas();
+        }
+    }
+
+    function checkBoxesSet() {
+        finalizarTareas(this.id);
+    }
+
+    cargarTareas();
+</script>
+
+<h1>Minimal API</h1>
+<div>
+    <label>Tarea:</label>
+    <input type="text" id="nombreTarea" placeholder="Nombre tarea">
+    <!--<label>Descripción:</label>-->
+    <!--<textarea id="descripcionTarea" placeholder="Descripción tarea"></textarea><br />-->
+    <button onclick="nuevaTarea()">Nueva tarea</button>
+</div>
+<div id="divListadoTareas" class="droppable">
+    @* <ul id="listadoTareas"></ul> *@
+</div>
