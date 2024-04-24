@@ -20,3 +20,21 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.draggable {
+    width: 100px;
+    height: 100px;
+    background-color: #acabad; /*#fabada*/
+    color: #fff;
+    text-align: center;
+    /*line-height: 100px;*/
+    margin: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.droppable {
+    min-height: 300px;
+    border: 2px dashed #ccc;
+    padding: 10px;
+}
