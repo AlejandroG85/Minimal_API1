@@ -49,25 +49,32 @@ namespace Minimal_API.Controllers
             return Ok(tarea);
         }
 
-        [HttpPost("OrdenarTareas")]
-        public IActionResult Actualizar_Orden(string order)
+        [HttpPost("{id}/OrdenarTareas")]
+        public IActionResult Actualizar_Orden(int id)
         {
-            var ids = order.Split(',').Select(int.Parse).ToList();
-            var tareas = _context.Tareas.ToList();
-
-            for (int i = 0; i < ids.Count; i++)
-            {
-                var tarea = tareas.FirstOrDefault(t => t.Id == ids[i]);
-                if (tarea != null)
+            //var ids = order.Split(',').Select(int.Parse).ToList();
+            //var tareas = _context.Tareas.ToList();
+            var aux = 0;
+            var tareas = _context.Tareas.Where(w => w.Id != id).OrderBy(o => o.Orden).ToList();
+            foreach (var tarea in tareas)
+            {          
+                var nTarea = tareas.FirstOrDefault(t => t.Id == tarea.Id);
+                if (nTarea != null)
                 {
-                    tarea.Orden = i + 1;
+                    nTarea.Orden = aux + 1; 
                 }
+                aux += 1;
             }
+
+            var tareaSelected = _context.Tareas.Where(w => w.Id == id).FirstOrDefault();
+            if (tareaSelected == null) return NotFound();
+
+            tareaSelected.Orden = aux;
 
             _context.SaveChanges();
             _cache.Remove("tarea");
 
-            return Ok();
+            return Ok(tareaSelected);
         }
 
         [HttpPost("Reordenar")]
