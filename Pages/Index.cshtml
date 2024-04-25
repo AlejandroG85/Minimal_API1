@@ -59,20 +59,6 @@
         tareasList.innerHTML = '';
 
         tareas.forEach(tarea => {
-            // const li = document.createElement('li');
-            // li.textContent = `${tarea.nombre} - ${tarea.finalizada ? 'Finalizada' : 'Pendiente'}  `;
-            // var checkBox = document.createElement('input');
-
-            // checkBox.id = tarea.id;
-            // checkBox.type = 'checkbox';
-            // checkBox.onclick = checkBoxesSet;
-            // if (tarea.finalizada) {
-            //     checkBox.checked = true
-            // } else {
-            //     checkBox.checked = false
-            // }
-            // li.appendChild(checkBox);
-            // tareasList.appendChild(li);
             const div = document.createElement('div');
             div.className = 'draggable';
             div.draggable = true
@@ -130,10 +116,8 @@
 
 <script>
     $(document).ready(function () {
-        //console.log("document loaded");
+
         let draggedItem = null;
-        // const draggables = document.querySelectorAll('.draggable');
-        // const droppable = document.getElementById('droppable');
 
         document.addEventListener('dragstart', function (e) {
             draggedItem = e.target;
